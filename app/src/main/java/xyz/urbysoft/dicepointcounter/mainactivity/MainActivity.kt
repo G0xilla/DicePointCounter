@@ -1,4 +1,4 @@
-package xyz.urbysoft.dicepointcounter
+package xyz.urbysoft.dicepointcounter.mainactivity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
