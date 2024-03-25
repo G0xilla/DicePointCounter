@@ -2,7 +2,8 @@ package xyz.urbysoft.dicepointcounter.pointcounter
 
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
-import java.lang.IllegalStateException
+import java.lang.IndexOutOfBoundsException
+import kotlin.IllegalStateException
 
 class PlayerTest {
     @Test
@@ -50,6 +51,78 @@ class PlayerTest {
 
         assertThrows(expectedException) {
             player.revertPoints()
+        }
+    }
+
+    @Test
+    fun testListAddPoints() {
+        val expectedPlayerList = listOf(
+            Player("G0xilla"),
+            Player("Trenazery", listOf(10.5))
+        )
+
+        val actualPlayerList = listOf(
+            Player("G0xilla"),
+            Player("Trenazery")
+        ).addPoints(1, 10.5)
+
+        assertEquals(expectedPlayerList, actualPlayerList)
+    }
+
+    @Test
+    fun testListGetPoints() {
+        val expectedPoints = 10.5
+
+        val actualPoints = listOf(
+            Player("G0xilla"),
+            Player("Trenazery")
+        ).addPoints(1, 10.5)
+            .getPoints(1)
+
+        assertEquals(expectedPoints, actualPoints)
+    }
+
+    @Test
+    fun testListRevertPoints() {
+        val expectedPlayerList = listOf(
+            Player("G0xilla"),
+            Player("Trenazery", listOf(10.5))
+        )
+
+        val actualPlayerList = listOf(
+            Player("G0xilla"),
+            Player("Trenazery")
+        ).addPoints(1, 10.5)
+            .addPoints(1, 20.0)
+            .revertPoints(1)
+
+        assertEquals(actualPlayerList, expectedPlayerList)
+    }
+
+    @Test
+    fun testAddPoints_whenPlayerIndexIsMoreThanOrEqualToTheSizeOfTheList_thenThrowIndexOutOfBoundsException() {
+        val exceptedException = IndexOutOfBoundsException::class.java
+
+        assertThrows(exceptedException) {
+            listOf(Player("G0xilla")).addPoints(1, 20.0)
+        }
+    }
+
+    @Test
+    fun testGetPoints_whenPlayerIndexIsMoreThanOrEqualToTheSizeOfTheList_thenThrowIndexOutOfBoundsException() {
+        val exceptedException = IndexOutOfBoundsException::class.java
+
+        assertThrows(exceptedException) {
+            listOf(Player("G0xilla")).getPoints(1)
+        }
+    }
+
+    @Test
+    fun testRevertPoints_whenPlayerHistoryIsEmpty_theThrowIllegalStateException() {
+        val exceptedException = IllegalStateException::class.java
+
+        assertThrows(exceptedException) {
+            listOf(Player("G0xilla")).revertPoints(0)
         }
     }
 }
