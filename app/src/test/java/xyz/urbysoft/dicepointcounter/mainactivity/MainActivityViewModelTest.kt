@@ -54,8 +54,8 @@ class MainActivityViewModelTest {
 
         val viewModel = MainActivityViewModel()
         viewModel.startNewGame(listOf("G0xilla", "Trenazery"))
-        viewModel.addPoints(1, 10.0)
-        viewModel.addPoints(1, 5.0)
+        viewModel.addPoints(viewModel.playerList.value!![1], 10.0)
+        viewModel.addPoints(viewModel.playerList.value!![1], 5.0)
         val actualState = viewModel.playerList.value
 
         assertEquals(exceptedState, actualState)
@@ -69,34 +69,34 @@ class MainActivityViewModelTest {
 
         val viewModel = MainActivityViewModel()
         viewModel.startNewGame(listOf("G0xilla"))
-        viewModel.addPoints(0, 10.0)
-        viewModel.addPoints(0, 5.0)
-        viewModel.revertPoints(0)
+        viewModel.addPoints(viewModel.playerList.value!![0], 10.0)
+        viewModel.addPoints(viewModel.playerList.value!![0], 5.0)
+        viewModel.revertPoints(viewModel.playerList.value!![0])
         val actualState = viewModel.playerList.value
 
         assertEquals(exceptedState, actualState)
     }
     @Test
-    fun testAddPoints_whenPlayerIndexIsMoreThanOrEqualToTheSizeOfTheList_thenThrowIndexOutOfBoundException() {
-        val exceptedException = IndexOutOfBoundsException::class.java
+    fun testAddPoints_whenPlayerIsNotInThePlayerList_thenThrowIllegalArgumentException() {
+        val exceptedException = IllegalArgumentException::class.java
 
         val viewModel = MainActivityViewModel()
         viewModel.startNewGame(listOf("G0xilla"))
 
         assertThrows(exceptedException) {
-            viewModel.addPoints(1, 10.0)
+            viewModel.addPoints(Player("Trenazery"), 10.0)
         }
     }
 
     @Test
-    fun testRevertPoints_whenPlayerIndexIsMoreThanOrEqualToTheSizeOfTheList_thenThrowIndexOutOfBoundException() {
-        val exceptedException = IndexOutOfBoundsException::class.java
+    fun testRevertPoints_whenPlayerIsNotInThePlayerList_thenThrowIllegalArgumentException() {
+        val exceptedException = IllegalArgumentException::class.java
 
         val viewModel = MainActivityViewModel()
         viewModel.startNewGame(listOf("G0xilla"))
 
         assertThrows(exceptedException) {
-            viewModel.revertPoints(1)
+            viewModel.revertPoints(Player("Trenazery"))
         }
     }
 
@@ -108,7 +108,7 @@ class MainActivityViewModelTest {
         viewModel.startNewGame(listOf("G0xilla"))
 
         assertThrows(exceptedException) {
-            viewModel.revertPoints(0)
+            viewModel.revertPoints(viewModel.playerList.value!![0])
         }
     }
 
@@ -119,7 +119,7 @@ class MainActivityViewModelTest {
         val viewModel = MainActivityViewModel()
 
         assertThrows(expectedException) {
-            viewModel.addPoints(0, 10.0)
+            viewModel.addPoints(Player("G0xilla"), 10.0)
         }
     }
 
@@ -130,7 +130,7 @@ class MainActivityViewModelTest {
         val viewModel = MainActivityViewModel()
 
         assertThrows(expectedException) {
-            viewModel.revertPoints(0)
+            viewModel.revertPoints(Player("G0xilla"))
         }
     }
 }

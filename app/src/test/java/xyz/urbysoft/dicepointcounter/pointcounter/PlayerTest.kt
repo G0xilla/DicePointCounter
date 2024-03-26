@@ -2,7 +2,7 @@ package xyz.urbysoft.dicepointcounter.pointcounter
 
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
-import java.lang.IndexOutOfBoundsException
+import java.lang.IllegalArgumentException
 import kotlin.IllegalStateException
 
 class PlayerTest {
@@ -61,10 +61,12 @@ class PlayerTest {
             Player("Trenazery", listOf(10.5))
         )
 
+        val playerOne = Player("G0xilla")
+        val playerTwo = Player("Trenazery")
         val actualPlayerList = listOf(
-            Player("G0xilla"),
-            Player("Trenazery")
-        ).addPoints(1, 10.5)
+            playerOne,
+            playerTwo
+        ).addPoints(playerTwo, 10.5)
 
         assertEquals(expectedPlayerList, actualPlayerList)
     }
@@ -73,11 +75,13 @@ class PlayerTest {
     fun testListGetPoints() {
         val expectedPoints = 10.5
 
-        val actualPoints = listOf(
-            Player("G0xilla"),
-            Player("Trenazery")
-        ).addPoints(1, 10.5)
-            .getPoints(1)
+        val playerOne = Player("G0xilla")
+        val playerTwo = Player("Trenazery")
+        val list = listOf(
+            playerOne,
+            playerTwo
+        ).addPoints(playerOne, 10.5)
+        val actualPoints = list[0].getPoints()
 
         assertEquals(expectedPoints, actualPoints)
     }
@@ -89,31 +93,34 @@ class PlayerTest {
             Player("Trenazery", listOf(10.5))
         )
 
-        val actualPlayerList = listOf(
-            Player("G0xilla"),
-            Player("Trenazery")
-        ).addPoints(1, 10.5)
-            .addPoints(1, 20.0)
-            .revertPoints(1)
+        val playerOne = Player("G0xilla")
+        val playerTwo = Player("Trenazery")
+        var actualPlayerList = listOf(
+            playerOne,
+            playerTwo
+        ).addPoints(playerTwo, 10.5)
+        actualPlayerList = actualPlayerList.addPoints(actualPlayerList[1], 20.0)
+        actualPlayerList = actualPlayerList.revertPoints(actualPlayerList[1])
 
         assertEquals(actualPlayerList, expectedPlayerList)
     }
 
     @Test
-    fun testAddPoints_whenPlayerIndexIsMoreThanOrEqualToTheSizeOfTheList_thenThrowIndexOutOfBoundsException() {
-        val exceptedException = IndexOutOfBoundsException::class.java
+    fun testAddPoints_whenPlayerIsNotInTheList_thenThrowIllegalArgumentException() {
+        val exceptedException = IllegalArgumentException::class.java
+
 
         assertThrows(exceptedException) {
-            listOf(Player("G0xilla")).addPoints(1, 20.0)
+            listOf(Player("G0xilla")).addPoints(Player("Trenazery"), 20.0)
         }
     }
 
     @Test
-    fun testGetPoints_whenPlayerIndexIsMoreThanOrEqualToTheSizeOfTheList_thenThrowIndexOutOfBoundsException() {
-        val exceptedException = IndexOutOfBoundsException::class.java
+    fun testGetPoints_whenPlayerIsNotInTheList_thenThrowIllegalArgumentException() {
+        val exceptedException = IllegalArgumentException::class.java
 
         assertThrows(exceptedException) {
-            listOf(Player("G0xilla")).getPoints(1)
+            listOf(Player("G0xilla")).getPoints(Player("Trenazery"))
         }
     }
 
@@ -121,8 +128,10 @@ class PlayerTest {
     fun testRevertPoints_whenPlayerHistoryIsEmpty_theThrowIllegalStateException() {
         val exceptedException = IllegalStateException::class.java
 
+        val player = Player("G0xilla")
+        val list = listOf(player)
         assertThrows(exceptedException) {
-            listOf(Player("G0xilla")).revertPoints(0)
+            list.revertPoints(player)
         }
     }
 }

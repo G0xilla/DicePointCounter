@@ -41,25 +41,25 @@ class MainActivityViewModel : ViewModel() {
     }
 
     /**
-     * Add points for player with appropriate index and update [playerList].
+     * Add points for the player and update [playerList]
      *
-     * @throws IndexOutOfBoundsException if [playerIndex] is more than or equal to the size of the list
+     * @throws IllegalArgumentException if [player] is not in the [playerList]
      * @throws IllegalStateException if [playerList] is null
      */
-    fun addPoints(playerIndex: Int, points: Double) {
-        val newList = _playerList.value?.addPoints(playerIndex, points)
+    fun addPoints(player: Player, points: Double) {
+        val newList = _playerList.value?.addPoints(player, points)
             ?: throw IllegalStateException()
         _playerList.value = newList
     }
 
     /**
-     * Revert points for the player with appropriate index and update [playerList].
+     * Revert points for the player and update [playerList]
      *
-     * @throws IndexOutOfBoundsException if [playerIndex] is more than or equal to the size of the list
+     * @throws IllegalArgumentException if [player] is not in the [playerList]
      * @throws IllegalStateException if [Player.pointsHistory] is empty or [playerList] is null
      */
-    fun revertPoints(playerIndex: Int) {
-        val newList = _playerList.value?.revertPoints(playerIndex)
+    fun revertPoints(player: Player) {
+        val newList = _playerList.value?.revertPoints(player)
             ?: throw IllegalStateException()
         _playerList.value = newList
     }

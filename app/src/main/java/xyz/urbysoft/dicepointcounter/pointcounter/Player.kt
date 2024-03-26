@@ -55,44 +55,58 @@ fun Player.getPoints(): Double {
 }
 
 /**
- * Add a new item at the end of [Player.pointsHistory] on player with appropriate index.
- * This item will be the sum of the last item in [Player.pointsHistory] and [points]. If
- * [Player.pointsHistory] is empty then the new item will have a [points] value.
+ * Add a new item at the end of [Player.pointsHistory] on player in list. This item will be
+ * the sum of the last item in [Player.pointsHistory] and [points]. If [Player.pointsHistory]
+ * is empty then the new item will have a [points] value.
  *
  * @return new list with updated player
- * @throws IndexOutOfBoundsException if [playerIndex] is more than or equal to the size of the list
- * @param playerIndex updated player
+ * @throws IllegalArgumentException if [player] is not in the list
  */
-fun List<Player>.addPoints(playerIndex: Int, points: Double): List<Player> {
+fun List<Player>.addPoints(player: Player, points: Double): List<Player> {
     val newList = this.toMutableList()
-    val player = newList.removeAt(playerIndex)
-    val newPlayer = player.addPoints(points)
-    newList.add(playerIndex, newPlayer)
+    val newPlayer = newList.find { it === player }?.addPoints(points)
+        ?: throw IllegalArgumentException("Cannot find a player")
+    newList.replaceAll {
+        if(player === it) {
+            newPlayer
+        } else {
+            it
+        }
+    }
     return newList.toList()
 }
 
 /**
- * Get the last item from [Player.pointsHistory] from player with appropriate index.
+ * Get the last item from [Player.pointsHistory] from player in list
  *
- * @return last item from [Player.pointsHistory] with appropriate index
- * @throws IndexOutOfBoundsException if [playerIndex] is more than or equal to the size of the list
- * @param playerIndex index of the player
+ * @return last item from [Player.pointsHistory]
+ * @throws IllegalArgumentException if [player] is not in list
  */
-fun List<Player>.getPoints(playerIndex: Int): Double {
-    return this[playerIndex].getPoints()
+fun List<Player>.getPoints(player: Player): Double {
+//    return this[playerIndex].getPoints()
+    return this.find {
+        it === player
+    }?.getPoints()
+        ?: throw IllegalArgumentException("Cannot find a player")
 }
 
 /**
- * Remove the last item from the [Player.pointsHistory] with the appropriate index.
+ * Remove the last item from the [Player.pointsHistory] from player in the list
  *
- * @return new list with updated [Player]
- * @throws IndexOutOfBoundsException if [playerIndex] is more than or equal to the size of the list
+ * @return new list with updated [player]
+ * @throws IllegalArgumentException if [player] is not in the list
  * @throws IllegalStateException if [Player.pointsHistory] is empty
  */
-fun List<Player>.revertPoints(playerIndex: Int): List<Player> {
+fun List<Player>.revertPoints(player: Player): List<Player> {
     val newList = this.toMutableList()
-    val player = newList.removeAt(playerIndex)
-    val newPlayer = player.revertPoints()
-    newList.add(playerIndex, newPlayer)
-    return newList.toList()
+    val newPlayer = newList.find { it === player }?.revertPoints()
+        ?: throw IllegalArgumentException("Cannot find a player")
+    newList.replaceAll {
+        if(it === player) {
+            newPlayer
+        } else {
+            it
+        }
+    }
+    return newList
 }
