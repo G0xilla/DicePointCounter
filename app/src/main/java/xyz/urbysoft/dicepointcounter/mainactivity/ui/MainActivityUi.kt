@@ -1,5 +1,7 @@
 package xyz.urbysoft.dicepointcounter.mainactivity.ui
 
+import androidx.activity.compose.BackHandler
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +40,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import xyz.urbysoft.dicepointcounter.R
+import xyz.urbysoft.dicepointcounter.mainactivity.MainActivityViewModel
 import xyz.urbysoft.dicepointcounter.pointcounter.Player
 import xyz.urbysoft.dicepointcounter.pointcounter.getPoints
 
@@ -188,7 +192,11 @@ fun ActivePlayer(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = player.getPoints().toString(),
+                    text = if (player.getPoints() % 1 == 0.0) {
+                        String.format("%.0f", player.getPoints())
+                    } else {
+                        player.getPoints().toString()
+                    },
                     style = MaterialTheme.typography.titleSmall
                 )
             }
@@ -348,7 +356,10 @@ fun ActivePlayerScreen(
                                 .padding(16.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.add_points_for, dialogPlayer!!.name),
+                                text = stringResource(
+                                    R.string.revert_points_for,
+                                    dialogPlayer!!.name
+                                ),
                                 style = MaterialTheme.typography.titleLarge
                             )
 
@@ -388,5 +399,38 @@ fun ActivePlayerScreen(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = viewModel()) {
+    val playerListState by viewModel.playerList.collectAsState()
+
+    if (playerListState != null) {
+        ActivePlayerScreen(
+            players = playerListState!!,
+            onAddPoints = { player, points ->
+                viewModel.addPoints(player, points)
+            },
+            onRevertPoints = {
+                try {
+                    viewModel.revertPoints(it)
+                } catch (_: IllegalStateException) {
+                }
+            },
+            modifier = modifier
+        )
+
+        BackHandler {
+            viewModel.resetGame()
+        }
+    } else {
+        NewGameScreen(
+            onNewGame = {
+                viewModel.startNewGame(it)
+            },
+            modifier = modifier
+        )
     }
 }
