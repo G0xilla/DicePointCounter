@@ -8,4 +8,6 @@
     <string name="cancel">Cancel</string>
     <string name="revert_points_for">Revert points for %1$s</string>
     <string name="invalid_number">Invalid number</string>
+    <string name="do_you_want_end_game">Do you want end game?</string>
+    <string name="at_least_3_characters">At least 3 characters</string>
 </resources>

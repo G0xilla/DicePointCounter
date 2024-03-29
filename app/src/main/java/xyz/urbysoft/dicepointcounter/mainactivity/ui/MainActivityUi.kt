@@ -80,7 +80,7 @@ fun NewPlayer(
             }
         )
         if (showShortNameErrorMessage) {
-            ErrorTextLabel(text = "At least 3 characters")
+            ErrorTextLabel(text = stringResource(R.string.at_least_3_characters))
         }
     }
 }
@@ -330,7 +330,7 @@ fun ActivePlayerScreen(
                                 )
                             )
 
-                            if(pointsText.toDoubleOrNull() == null) {
+                            if (pointsText.toDoubleOrNull() == null) {
                                 ErrorTextLabel(text = stringResource(R.string.invalid_number))
                             }
 
@@ -425,24 +425,57 @@ fun ActivePlayerScreen(
 @Composable
 fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = viewModel()) {
     val playerListState by viewModel.playerList.collectAsState()
+    var showEndGameDialog by remember { mutableStateOf(false) }
 
     if (playerListState != null) {
-        ActivePlayerScreen(
-            players = playerListState!!,
-            onAddPoints = { player, points ->
-                viewModel.addPoints(player, points)
-            },
-            onRevertPoints = {
-                try {
-                    viewModel.revertPoints(it)
-                } catch (_: IllegalStateException) {
-                }
-            },
+        Column(
             modifier = modifier
-        )
+        ) {
+            ActivePlayerScreen(
+                players = playerListState!!,
+                onAddPoints = { player, points ->
+                    viewModel.addPoints(player, points)
+                },
+                onRevertPoints = {
+                    try {
+                        viewModel.revertPoints(it)
+                    } catch (_: IllegalStateException) {
+                    }
+                }
+            )
+            if (showEndGameDialog) {
+                Dialog(onDismissRequest = { showEndGameDialog = false }) {
+                    Card {
+                        Column(
+                            modifier = Modifier
+                                .padding(16.dp)
+                        ) {
+                            Text(stringResource(R.string.do_you_want_end_game))
+
+                            Row(
+                                horizontalArrangement = Arrangement.End,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                TextButton(
+                                    onClick = { showEndGameDialog = false }
+                                ) {
+                                    Text(stringResource(id = android.R.string.cancel))
+                                }
+
+                                TextButton(
+                                    onClick = { viewModel.resetGame() }
+                                ) {
+                                    Text(stringResource(id = android.R.string.ok))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         BackHandler {
-            viewModel.resetGame()
+            showEndGameDialog = true
         }
     } else {
         NewGameScreen(
