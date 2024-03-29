@@ -1,5 +1,7 @@
 package xyz.urbysoft.dicepointcounter.pointcounter
 
+import java.io.Serializable
+
 /**
  * Data structure which represent player. The structure trace save name of the player in [name]
  * and points history in [pointsHistory].
@@ -7,7 +9,7 @@ package xyz.urbysoft.dicepointcounter.pointcounter
 data class Player(
     val name: String,
     val pointsHistory: List<Double> = listOf()
-)
+): Serializable
 
 /**
  * Add a new item at the end of [Player.pointsHistory]. This item will be the sum of
