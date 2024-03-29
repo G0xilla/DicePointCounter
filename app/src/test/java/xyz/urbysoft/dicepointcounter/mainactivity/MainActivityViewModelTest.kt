@@ -1,5 +1,7 @@
 package xyz.urbysoft.dicepointcounter.mainactivity
 
+import androidx.lifecycle.SavedStateHandle
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 import org.junit.jupiter.api.Assertions.*
 import xyz.urbysoft.dicepointcounter.pointcounter.Player
@@ -132,5 +134,25 @@ class MainActivityViewModelTest {
         assertThrows(expectedException) {
             viewModel.revertPoints(Player("G0xilla"))
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun testPersistPlayers() {
+        val expectedPlayerList = listOf(
+            Player("G0xilla", listOf(10.5, 15.5)),
+            Player("Trenazery")
+        )
+
+        val savedStateHandle = SavedStateHandle()
+        val viewModelOne = MainActivityViewModel(savedStateHandle)
+        viewModelOne.startNewGame(listOf("G0xilla", "Trenazery"))
+        viewModelOne.addPoints(viewModelOne.playerList.value!![0], 10.5)
+        viewModelOne.addPoints(viewModelOne.playerList.value!![0], 5.0)
+
+        val viewModelTwo = MainActivityViewModel(savedStateHandle)
+        val actualPlayerList = viewModelTwo.playerList.value!!
+
+        assertEquals(expectedPlayerList, actualPlayerList)
     }
 }
