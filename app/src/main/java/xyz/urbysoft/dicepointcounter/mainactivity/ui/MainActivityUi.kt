@@ -32,6 +32,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -91,7 +92,7 @@ fun NewGameScreen(
     modifier: Modifier = Modifier,
     onNewGame: (List<String>) -> Unit = {}
 ) {
-    var playerNames by remember { mutableStateOf(listOf("", "")) }
+    var playerNames by rememberSaveable { mutableStateOf(listOf("", "")) }
 
     LazyColumn(modifier) {
         itemsIndexed(playerNames) { index, name ->
@@ -102,11 +103,11 @@ fun NewGameScreen(
                 playerIndex = index,
                 name = name,
                 enableRemovePlayer = index > 1,
-                showShortNameErrorMessage = name.length < 3,
+                showShortNameErrorMessage = name.trim().length < 3,
                 onNameChange = {
                     val newList = playerNames.toMutableList()
                     newList.removeAt(index)
-                    newList.add(index, it.trim())
+                    newList.add(index, it)
                     playerNames = newList
                 },
                 onRemovePlayer = {
@@ -141,7 +142,7 @@ fun NewGameScreen(
 
                 Button(
                     onClick = {
-                        onNewGame(playerNames)
+                        onNewGame(playerNames.map { it.trim() })
                     },
                     modifier = Modifier.weight(1f),
                     enabled = playerNames.all { it.length >= 3 }
