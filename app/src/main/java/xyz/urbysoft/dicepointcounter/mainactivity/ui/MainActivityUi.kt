@@ -429,7 +429,6 @@ fun ActivePlayerScreen(
 @Composable
 fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = viewModel()) {
     val playerListState by viewModel.playerList.collectAsState()
-    var showEndGameDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -451,6 +450,8 @@ fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = vie
                     .padding(horizontal = 4.dp)
                     .padding(top = 4.dp)
             ) {
+                var showEndGameDialog by remember { mutableStateOf(false) }
+
                 ActivePlayerScreen(
                     players = playerListState!!,
                     onAddPoints = { player, points ->
@@ -483,7 +484,9 @@ fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = vie
                                     }
 
                                     TextButton(
-                                        onClick = { viewModel.resetGame() }
+                                        onClick = {
+                                            viewModel.resetGame()
+                                        }
                                     ) {
                                         Text(stringResource(id = android.R.string.ok))
                                     }
@@ -492,10 +495,10 @@ fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = vie
                         }
                     }
                 }
-            }
 
-            BackHandler {
-                showEndGameDialog = true
+                BackHandler {
+                    showEndGameDialog = true
+                }
             }
         } else {
             NewGameScreen(
