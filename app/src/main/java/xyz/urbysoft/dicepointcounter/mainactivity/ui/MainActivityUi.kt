@@ -21,13 +21,17 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -109,8 +113,7 @@ fun NewGameScreen(
         itemsIndexed(playerNames) { index, name ->
             NewPlayer(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp),
+                    .fillMaxWidth(),
                 playerIndex = index,
                 name = name,
                 enableRemovePlayer = index > 1,
@@ -421,68 +424,88 @@ fun ActivePlayerScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = viewModel()) {
     val playerListState by viewModel.playerList.collectAsState()
     var showEndGameDialog by remember { mutableStateOf(false) }
 
-    if (playerListState != null) {
-        Column(
-            modifier = modifier
-        ) {
-            ActivePlayerScreen(
-                players = playerListState!!,
-                onAddPoints = { player, points ->
-                    viewModel.addPoints(player, points)
-                },
-                onRevertPoints = {
-                    try {
-                        viewModel.revertPoints(it)
-                    } catch (_: IllegalStateException) {
-                    }
-                }
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text("Points counter") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
             )
-            if (showEndGameDialog) {
-                Dialog(onDismissRequest = { showEndGameDialog = false }) {
-                    Card {
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                        ) {
-                            Text(stringResource(R.string.do_you_want_end_game))
-
-                            Row(
-                                horizontalArrangement = Arrangement.End,
-                                modifier = Modifier.fillMaxWidth()
+        },
+        modifier = modifier
+    ) { paddingValues ->
+        if (playerListState != null) {
+            Column(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(horizontal = 4.dp)
+                    .padding(top = 4.dp)
+            ) {
+                ActivePlayerScreen(
+                    players = playerListState!!,
+                    onAddPoints = { player, points ->
+                        viewModel.addPoints(player, points)
+                    },
+                    onRevertPoints = {
+                        try {
+                            viewModel.revertPoints(it)
+                        } catch (_: IllegalStateException) {
+                        }
+                    }
+                )
+                if (showEndGameDialog) {
+                    Dialog(onDismissRequest = { showEndGameDialog = false }) {
+                        Card {
+                            Column(
+                                modifier = Modifier
+                                    .padding(16.dp)
                             ) {
-                                TextButton(
-                                    onClick = { showEndGameDialog = false }
-                                ) {
-                                    Text(stringResource(id = android.R.string.cancel))
-                                }
+                                Text(stringResource(R.string.do_you_want_end_game))
 
-                                TextButton(
-                                    onClick = { viewModel.resetGame() }
+                                Row(
+                                    horizontalArrangement = Arrangement.End,
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text(stringResource(id = android.R.string.ok))
+                                    TextButton(
+                                        onClick = { showEndGameDialog = false }
+                                    ) {
+                                        Text(stringResource(id = android.R.string.cancel))
+                                    }
+
+                                    TextButton(
+                                        onClick = { viewModel.resetGame() }
+                                    ) {
+                                        Text(stringResource(id = android.R.string.ok))
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        BackHandler {
-            showEndGameDialog = true
+            BackHandler {
+                showEndGameDialog = true
+            }
+        } else {
+            NewGameScreen(
+                onNewGame = {
+                    viewModel.startNewGame(it)
+                },
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(horizontal = 4.dp)
+            )
         }
-    } else {
-        NewGameScreen(
-            onNewGame = {
-                viewModel.startNewGame(it)
-            },
-            modifier = modifier
-        )
     }
 }
