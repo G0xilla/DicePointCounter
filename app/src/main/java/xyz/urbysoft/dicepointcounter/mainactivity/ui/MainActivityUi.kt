@@ -50,6 +50,9 @@ import xyz.urbysoft.dicepointcounter.R
 import xyz.urbysoft.dicepointcounter.mainactivity.MainActivityViewModel
 import xyz.urbysoft.dicepointcounter.pointcounter.Player
 import xyz.urbysoft.dicepointcounter.pointcounter.getPoints
+import xyz.urbysoft.dicepointcounter.ui.LocalLocale
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 
 @Preview(showBackground = true)
 @Composable
@@ -208,9 +211,11 @@ fun ActivePlayer(
                 )
                 Text(
                     text = if (player.getPoints() % 1 == 0.0) {
-                        String.format("%.0f", player.getPoints())
+                        String.format(LocalLocale.current, "%.0f", player.getPoints())
                     } else {
-                        player.getPoints().toString()
+                        val decimalFormat = DecimalFormat("0.###", DecimalFormatSymbols(LocalLocale.current))
+                        val formattedNumber = decimalFormat.format(player.getPoints())
+                        String.format(LocalLocale.current, "%s", formattedNumber)
                     },
                     style = MaterialTheme.typography.titleSmall
                 )
@@ -333,7 +338,7 @@ fun ActivePlayerScreen(
                                 )
                             )
 
-                            if (pointsText.toDoubleOrNull() == null) {
+                            if (pointsText.replace(',', '.').toDoubleOrNull() == null) {
                                 ErrorTextLabel(text = stringResource(R.string.invalid_number))
                             }
 
@@ -351,12 +356,12 @@ fun ActivePlayerScreen(
                                             contentColor = MaterialTheme.colorScheme.secondary,
                                         )
                                 ) {
-                                    Text(stringResource(R.string.cancel))
+                                    Text(stringResource(android.R.string.cancel))
                                 }
 
                                 TextButton(
                                     onClick = {
-                                        val points = pointsText.toDoubleOrNull()
+                                        val points = pointsText.replace(',', '.').toDoubleOrNull()
                                         if (points != null) {
                                             onAddPoints(dialogPlayer!!, points)
                                             showDialog = false
@@ -399,7 +404,7 @@ fun ActivePlayerScreen(
                                             contentColor = MaterialTheme.colorScheme.secondary
                                         )
                                 ) {
-                                    Text(stringResource(id = R.string.cancel))
+                                    Text(stringResource(id = android.R.string.cancel))
                                 }
 
                                 TextButton(
@@ -433,8 +438,7 @@ fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = vie
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {
-                    Text("Points counter") },
+                title = { Text(stringResource(id = R.string.app_name)) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer

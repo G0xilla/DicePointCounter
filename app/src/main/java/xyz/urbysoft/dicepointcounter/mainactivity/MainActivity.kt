@@ -11,19 +11,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import xyz.urbysoft.dicepointcounter.mainactivity.ui.Screen
+import xyz.urbysoft.dicepointcounter.ui.Localization
 import xyz.urbysoft.dicepointcounter.ui.theme.DicePointCounterTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            DicePointCounterTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Screen()
+            Localization {
+                DicePointCounterTheme {
+                    // A surface container using the 'background' color from the theme
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        Screen()
+                    }
                 }
             }
         }
