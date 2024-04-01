@@ -351,7 +351,7 @@ fun ActivePlayerScreen(
                                             contentColor = MaterialTheme.colorScheme.secondary,
                                         )
                                 ) {
-                                    Text(stringResource(R.string.cancel))
+                                    Text(stringResource(android.R.string.cancel))
                                 }
 
                                 TextButton(
@@ -399,7 +399,7 @@ fun ActivePlayerScreen(
                                             contentColor = MaterialTheme.colorScheme.secondary
                                         )
                                 ) {
-                                    Text(stringResource(id = R.string.cancel))
+                                    Text(stringResource(id = android.R.string.cancel))
                                 }
 
                                 TextButton(
