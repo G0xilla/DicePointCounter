@@ -440,8 +440,8 @@ fun Screen(modifier: Modifier = Modifier, viewModel: MainActivityViewModel = vie
             TopAppBar(
                 title = { Text(stringResource(id = R.string.app_name)) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary
                 )
             )
         },
